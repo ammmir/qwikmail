@@ -1,63 +1,74 @@
 # Makefile for QwikMail SMTP server (qwik-smtpd)
+# configuration
+BINARIES=/usr/local/bin
+QUEUE=/var/spool/qwik-smtpd
+CONFIG=/etc/qwik-smtpd
+# end configuration
 
-RM	= /bin/rm
 CP	= /bin/cp
 MV	= /bin/mv
 MKDIR	= /bin/mkdir
-CAT	= /bin/cat
-SLEEP	= /bin/sleep
-CHMOD	= /bin/chmod
-GCC	= gcc
+INSTALL = /usr/bin/install
+CC = gcc
+CFLAGS = -O2
 
-default_target: dist
+SOURCES = qwik-smtpd.h qwik-smtpd.c config.h
+OBJS = qwik-smtpd.o
+TARGET = qwik-smtpd
+
+${TARGET}: ${OBJS}
+	@echo "Compiling..."
+	${CC} ${CFLAGS} -o ${TARGET} ${OBJS}
+	@echo ""
+	@echo "Congrats! qwik-smtpd compiled successfully."
+	@echo ""
+	@echo "Proceed with a 'make install' to install the following items:"
+	@echo " - binaries into ${BINARIES}"
+	@echo " - queue structure into ${QUEUE}"
+	@echo " - configuration files into ${CONFIG}"
+	@echo ""
+	@echo "Be careful not to install on top of a running queue!"
+	@echo "Thank you for using QwikMail."
+	@echo ""
+
+${OBJS}: ${SOURCES}
+	${CC} ${CFLAGS} -c $*.c
 
 clean:
 	@echo "Cleaning up..."
-	${RM} -f qwik-smtpd
-	${CHMOD} -x qwik-deliver.pl mailbomb.pl myip.sh checkpassword
-	@${SLEEP} 0
+	rm -f ${OBJS}
+	rm -f ${TARGET}
 
-install: dist
-	@echo "We're sorry, but you will have to manually install this beast!"
-	@echo "See INSTALL for details on how to install"
+test: ${TARGET}
+	./qwik-smtpd
 
-sdlkfjsldfinstall: dist
-	${MKDIR} /etc/qwik-smtpd
-	${CP} -u checkpassword /var/spool/qwik-smtpd
-	${MKDIR} /var/spool/qwik-smtpd
-	${MKDIR} /var/spool/qwik-smtpd/control
-	${MKDIR} /var/spool/qwik-smtpd/messages
-	@echo `sh myip.sh` > /etc/qwik-smtpd/localip
-	@echo `hostname` > /etc/qwik-smtpd/localhost
-	@echo `hostname` > /etc/qwik-smtpd/smtpgreeting 
+# default_target: dist
+install: ${TARGET}
+	${MKDIR} ${CONFIG}
+	${INSTALL} -d -o qwikmail -g qwikmail -m 750 ${CONFIG}
+	${INSTALL} -d -o qwikmail -g qwikmail -m 750 ${QUEUE}
+	${INSTALL} -d -o qwikmail -g qwikmail -m 750 ${QUEUE}/control
+	${INSTALL} -d -o qwikmail -g qwikmail -m 750 ${QUEUE}/messages
+	${INSTALL} -o qwikmail -g qwikmail -m 750 -p checkpassword ${QUEUE}
+	${INSTALL} -o qwikmail -g qwikmail -m 750 -p -s qwik-smtpd ${BINARIES}
+	${INSTALL} -o qwikmail -g qwikmail -m 750 -p qwik-deliver.pl ${BINARIES}/qwik-deliver
+	@echo `sh myip.sh` > ${CONFIG}/localip
+	@echo `hostname` > ${CONFIG}/localhost
+	@echo `hostname` > ${CONFIG}/smtpgreeting 
 	@echo ""
 	@echo "Congratulations! QwikMail SMTP got installed!"
 	@echo "I have created the spool directories under:"
-	@echo "/var/spool/qwik-smtpd"
+	@echo "${QUEUE}"
 	@echo ""
-	@echo "Configuration files reside in: /etc/qwik-smtpd"
+	@echo "Configuration files reside in: ${CONFIG}"
 	@echo "I have copied some sample config file there..."
+	@echo ""
+	@echo "Binaries have been installed under ${BINARIES}"
 	@echo ""
 	@echo "Now you will need to modify qwik-deliver.pl to"
 	@echo "suit your needs (read INSTALL for more details."
 	@echo ""
-	@echo "Run qwik-deliver like so: ./qwik-deliver.pl"
-	@echo ""
-	@echo "Have a nice time getting this working! :-)"
+	@echo "Run qwik-deliver like so: ${BINARIES}/qwik-deliver"
 	@echo ""
 	@echo "http://qwikmail.sourceforge.net/smtpd/"
-	@echo ""
-
-dist: clean
-	@echo "Compiling..."
-	${GCC} -O2 -o qwik-smtpd qwik-smtpd.c
-	@echo ""
-	${CHMOD} +x qwik-deliver.pl mailbomb.pl myip.sh checkpassword
-	@echo ""
-	@echo "Congrats! qwik-smtpd compiled successfully."
-	@echo ""
-	@echo "Now do a 'make install' to create the queue directories"
-	@echo "and to copy the config files and binaries."
-	@echo ""
-	@echo "Be careful not to install on top of a running queue!"
 	@echo ""
