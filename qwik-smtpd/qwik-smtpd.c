@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2004-09-10 06:31:38 $ 
-   $Revision: 1.24 $
+   $Date: 2004-10-21 04:34:05 $ 
+   $Revision: 1.25 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -358,6 +358,7 @@ int main(int argc, char* argv[])
 	    }
 	    else if(found == 1)
             {
+	        // TODO: support djb's checkpasswd standard
                 // checkpassword - checks if user exists
                 char line[1024];
                 char oldline[1024];

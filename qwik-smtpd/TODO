@@ -1,9 +1,11 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2004-09-10 06:31:38 $
-$Revision: 1.15 $
+$Date: 2004-10-21 04:34:05 $
+$Revision: 1.16 $
 
+- introduce functions for all SMTP verbs
+- reduce global variable pollution
 - run checkpassword *after* RCPT TO's, but before DATA command, to minimize
   DoS attacks against checkpassword program; or fork a kid and talk to it
   via SysV IPC... if not that, throttle RCPT commands (sleep?), and as a

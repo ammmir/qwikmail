@@ -36,8 +36,7 @@ ${OBJS}: ${SOURCES}
 
 clean:
 	@echo "Cleaning up..."
-	rm -f ${OBJS}
-	rm -f ${TARGET}
+	rm -f ${OBJS} ${TARGET}
 
 test: ${TARGET}
 	./qwik-smtpd
