@@ -32,6 +32,10 @@
    compliant server should accept at least 100 */
 #define MAX_RECIPIENTS 100
 
+/* maximum number of recipients before introducing a 1 second delay for
+   every additonal RCPT TO */
+#define MAX_FAST_RCPTS 10
+
 /* maximum number of bad commands that can be received before the server
    shuts down the connection; DO NOT SET BELOW 2! */
 #define MAX_SMTP_ERRORS 10

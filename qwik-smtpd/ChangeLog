@@ -10,6 +10,7 @@
   than half the value of max_recipients or if greater than MAX_FAST_RCPTS
 - if the message size is greater than what is allowed, the data file is
   deleted using unlink()
+- changed distribution from qwikmail-smtpd to qwik-smtpd
 
 0.1
 ---
