@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
    Version: 0.1
-   $Date: 2002-02-07 02:55:04 $ 
-   $Revision: 1.4 $
+   $Date: 2002-03-12 18:15:16 $ 
+   $Revision: 1.5 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -284,12 +284,19 @@ int main(int argc, char* argv[])
             // only accept mail to localHost; ignore if no @ sign
             if(strstr(arg3,localHost) || !strstr(arg3,"@"))
             {
-              // either the domain part = localHost OR there is no @ sign,
-              // which means that the domain = localHost
-              clientState = RCPTTO;
-              push(arg3);
-              out(250, "ok");
-              alarm(rcpt_timeout);
+              if(!strstr(arg3,"!"))
+              {
+                out(550, "relaying denied");
+              }
+              else
+              {
+                // either the domain part = localHost OR there is no @ sign,
+                // which means that the domain = localHost
+                clientState = RCPTTO;
+                push(arg3);
+                out(250, "ok");
+                alarm(rcpt_timeout);
+              }
             }
             else
             {
