@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.3
-   $Date: 2002-05-12 20:47:37 $ 
-   $Revision: 1.14 $
+   $Date: 2002-05-23 02:25:41 $ 
+   $Revision: 1.15 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -152,6 +152,7 @@ int main(int argc, char* argv[])
   strcpy(localIP,getConfig("localip"));
   strcpy(localHost,getConfig("localhost"));
   strcpy(clientIP,getIP());
+  setenv("REMOTE_ADDR",clientIP,1);
 
   //get rcpthosts
   getConfigMulti("rcpthosts");
@@ -351,7 +352,8 @@ int main(int argc, char* argv[])
                 strcpy(pipecmd,"");
                 good = 0;
                 alarm(0);
-                sprintf(pipecmd, "%s \"%s\"", CHECKPASSWORD, arg3);
+                //sprintf(pipecmd, "%s \"%s\"", CHECKPASSWORD, arg3);
+                sprintf(pipecmd, "%s", CHECKPASSWORD);
                 if( strcmp(arg3,"\\") && strcmp(arg3,"..") &&
                     strcmp(arg3,"/") && strcmp(arg3,"\"") &&
                     strcmp(arg3,"\'") && strcmp(arg3,"$") &&
