@@ -2,9 +2,9 @@
 # qwik-deliver.pl - delivery agent for QwikMail smtpd
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
-# (C) Copyright 2000-2001 by Amir Malik
-# $Date: 2002-02-07 02:41:16 $
-# $Revision: 1.3 $
+# (C) Copyright 2000-2002 by Amir Malik
+# $Date: 2002-03-13 05:23:24 $
+# $Revision: 1.4 $
 
 use strict;
 use DBI;

@@ -3,13 +3,13 @@
                 this server complies with RFC-821 section 4.5.1 Minimum
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
-   Version: 0.1
-   $Date: 2002-03-13 05:20:59 $ 
-   $Revision: 1.7 $
+   Version: 0.2
+   $Date: 2002-03-13 05:23:24 $ 
+   $Revision: 1.8 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
-   (C) Copyright 2000-2001 by Amir Malik
+   (C) Copyright 2000-2002 by Amir Malik
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

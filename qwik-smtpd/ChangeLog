@@ -4,6 +4,8 @@
 - cleaned up qwik-deliver.pl and qwik-smtpd.c
 - removed unused config struct from server
 - added stuff against relaying; checks for ! character
+- added qmail-like "rcpthosts" config file; contains \n-separated list of
+  domains to accept mail for
 
 0.1
 ---
