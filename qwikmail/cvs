@@ -1,0 +1,3 @@
+export CVS_RSH=ssh1
+export CVSROOT=amir142@cvs.qwikmail.sourceforge.net:/cvsroot/qwikmail
+cvs import qwikmail vendor start
