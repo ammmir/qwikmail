@@ -1,0 +1,51 @@
+To install:
+
+1. note this: this server has not been tested in a production environment
+2. edit "config.h" and look over the defaults and change some of them if
+   you want to; configuration files will override any of the compiled-in
+   defaults, so if you want less config files to worry about, edit the
+   defaults!
+3. `make` (compiles programs)
+4. `grep "MODIFY THIS" * ` (returns a list of locations in files where you
+   will need to edit some variables to suit your needs; just config vars)
+5. su root (becomes superuser)
+6. make install (creates queue dirs, copies files, etc.)
+7. read the file CONFIG, and create/modify the appropriate files in the
+   configuration directory
+8. useradd qwikmail -d /var/spool/qwik-smtpd
+9. groupadd qwikmail
+0. do this:
+    chown -R qwikmail:qwikmail /etc/qwik-smtpd
+    chown -R qwikmail:qwikmail /var/spool/qwik-smtpd
+    chmod -R u+rw /var/spool/qwik-smtpd
+    chmod -R og-rw /var/spool/qwik-smtpd
+   where `qwikmail' is the name of your mail user/group.
+
+IF YOUR ARE USING INETD:
+1. add the following line in /etc/inetd.conf:
+   smtp  stream  tcp  nowait.200  qwikmail /usr/local/sbin/qwik-smtpd  qsmtpd
+   note: inetd will limit 200 connections to this service per minute
+2. killall -HUP inetd
+
+IF YOU ARE USING XINETD:
+1. add the following lines to /etc/xinetd.conf:
+    service smtp
+    {
+      flags = REUSE
+      socket_type = stream
+      protocol = tcp
+      wait = no
+      user = qwikmail
+      server = /usr/local/sbin/qwik-smtpd
+    }
+2. killall -HUP xinetd
+
+
+3. telnet localhost 25 (and test it out!)
+
+
+Hopefully, it works...
+Please note that QwikMail SMTP is not a full mail system since it lacks a
+major component, the ability to send mail to other sites without using an
+external program such as the sendmail binary. But don't worry, it will
+soon be, as the development of such a component is already under way.
