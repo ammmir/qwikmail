@@ -17,7 +17,7 @@ OBJS = qwik-smtpd.o
 TARGET = qwik-smtpd
 
 ${TARGET}: ${OBJS}
-	@echo "Compiling..."
+	@echo "Linking..."
 	${CC} ${CFLAGS} -o ${TARGET} ${OBJS}
 	@echo ""
 	@echo "Congrats! qwik-smtpd compiled successfully."

@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2004-11-18 05:51:25 $ 
-   $Revision: 1.27 $
+   $Date: 2004-11-27 07:48:15 $ 
+   $Revision: 1.28 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -66,7 +66,7 @@ extern int parseInput(char [],char [],char [], char []);
 extern int getline(char [], int);
 extern char* getConfig(char []);
 extern char* getConfigMulti(char []);
-extern int out(int, char[]);
+extern void out(int, char[]);
 extern int push(char[]);
 extern int catch_alarm(int);
 
@@ -330,7 +330,7 @@ int main(int argc, char* argv[])
           setenv("SMTP_RCPT_TO",arg3,1);
           if(clientRcpts > max_recipients)
           {
-            out(550, "too many recipients");
+            out(452, "too many recipients");
           }
           else
           {
@@ -507,7 +507,7 @@ int main(int argc, char* argv[])
   }
 }
 
-int out(int err, char msg[])
+void out(int err, char msg[])
 {
   isGood = 1;
   printf("%d %s\r\n", err, msg);
@@ -548,7 +548,7 @@ int getline(char line[], int max)
 
     if(clientState < DATA && nch > 512) {
       // if we're not in the DATA state, lines are limited to 512 chars
-      out(501, "command line too long");
+      out(500, "command line too long");
       //exit(0); should we abort here?
     }
 
