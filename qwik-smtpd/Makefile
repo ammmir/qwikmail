@@ -1,4 +1,4 @@
-# Makefile for QwikMail SMTP server
+# Makefile for QwikMail SMTP server (qwik-smtpd)
 
 RM	= /bin/rm
 CP	= /bin/cp
@@ -41,6 +41,8 @@ install: dist
 	@echo ""
 	@echo "Have a nice time getting this working! :-)"
 	@echo ""
+	@echo "http://qwikmail.sourceforge.net/smtpd/"
+	@echo ""
 
 dist: clean
 	@echo "Compiling..."
@@ -52,4 +54,6 @@ dist: clean
 	@echo ""
 	@echo "Now do a 'make install' to create the queue directories"
 	@echo "and to copy the config files and binaries."
+	@echo ""
+	@echo "Be careful not to install on top of a running queue!"
 	@echo ""

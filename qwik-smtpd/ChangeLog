@@ -15,6 +15,7 @@
   you have 10 RCPTs!) the IP in each blacklist, until a match is found;
   it loops until all servers have been searched, and if none found, then
   continues
+- updated mailbomb.pl for more options and better UI (added time counting :)
 
 0.2
 ---

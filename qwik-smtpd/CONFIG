@@ -1,5 +1,8 @@
 Configuration Files
--------------------
+===================
+
+$Date: 2002-05-30 00:02:39 $
+$Revision: 1.3 $
 
 In qwik-smtpd's configuration file directory (eg. /etc/qwik-smtpd),
 you can add any of the following files with the appropriate content
@@ -12,6 +15,7 @@ and localhost configration files.
 
 
 Parameters
+----------
 
 localip              local IP address of machine;
                       TODO: make this auto detected
@@ -25,9 +29,13 @@ rcpthosts            a list of \n separated hostnames
                       that this server accepts mail for;
 		      modeled after qmail's rcpthosts;
 		      a \n is REQUIRED at the EOF
-
+blacklists          list of DNS-style RBL server to check
+                     for incoming email's remote IP; format:
+		     server,errormessage
+                     relays.ordb.org,You have been blacklisted.
 
 Limits
+------
 
 max_recipients       max # of recipients per message
 max_smtp_errors      max # of bad smtp cmds before
@@ -36,6 +44,7 @@ max_message_size     max size in bytes of a message
 
 
 Timeouts (in seconds)
+---------------------
 
 connect_timeout      time before greeting has been issued
 mail_timeout         before MAIL FROM has been issued
