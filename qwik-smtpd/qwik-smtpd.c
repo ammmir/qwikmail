@@ -2,10 +2,10 @@
    Description: a very bare-bones, minimum implementation of an SMTP server,
                 this server complies with RFC-821 section 4.5.1 Minimum
                 Implementation -- implementing all the required functionality
-                of a ESMTP server
+                of an SMTP server
    Version: 0.2
-   $Date: 2002-03-13 05:26:08 $ 
-   $Revision: 1.9 $
+   $Date: 2002-03-13 18:42:34 $ 
+   $Revision: 1.10 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -156,6 +156,8 @@ int main(int argc, char* argv[])
 
   signal(SIGALRM, catch_alarm);
 
+  // TODO: use another mechanism for logging; syslog dumps core
+  // TODO: maybe something like /var/log/qwik-smtpd
   // open the syslog connection for logging
   // openlog("qwik-smtpd",LOG_PID,LOG_MAIL);
 
@@ -173,7 +175,9 @@ int main(int argc, char* argv[])
         fclose(fpout);
         if(max_message_size > 0 && messageSize > max_message_size)
         {
+          // TODO: delete file, since it's too big
           out(552, "too much mail data");
+          unlink(messageFile);
           messageSize = 0;
         }
         else
@@ -291,18 +295,22 @@ int main(int argc, char* argv[])
             // only accept mail to localHost; ignore if no @ sign
             for(x = 0; x < cfgRcptHosts; x++)
             {
-              if(rcpthosts[x] != NULL && !strcasecmp(rcpthosts[x],arg3))
+              if(rcpthosts[x] != NULL && strstr(arg3,rcpthosts[x]))
               {
                 found = 1;
                 break;
               }
             }
 
-            if(found == 1 || !strstr(arg3,"@"))
+            if(found == 1)
             {
               if(strstr(arg3,"!"))
               {
                 out(550, "relaying denied");
+              }
+              else if(!strstr(arg3,"@"))
+              {
+                out(553, "please use full email address");
               }
               else
               {
@@ -310,6 +318,7 @@ int main(int argc, char* argv[])
                 // which means that the domain = localHost
                 clientState = RCPTTO;
                 push(arg3);
+                // TODO: introduce a short delay to prevent spamming
                 out(250, "ok");
                 alarm(rcpt_timeout);
               }
