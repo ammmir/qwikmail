@@ -4,12 +4,12 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2003-11-13 20:45:37 $ 
-   $Revision: 1.20 $
+   $Date: 2003-11-13 21:12:26 $ 
+   $Revision: 1.21 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
-   (C) Copyright 2000-2003 by Amir Malik
+   (C) Copyright 2000-2004 by Amir Malik
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -96,14 +96,6 @@ int main(int argc, char* argv[])
 
   int found = 0;
 
-  // check if running as root
-  if(geteuid() == 0)
-  {
-    printf("421 qwik-smtpd refuses to run as root!\r\n");
-    (void) fflush(stdout);
-    exit(1);
-  }
-
   // load config limits
   int max_recipients = atoi(getConfig("maxrcpts"));
   int max_smtp_errors = atoi(getConfig("maxsmtperrors"));
@@ -149,6 +141,15 @@ int main(int argc, char* argv[])
   now = time( (time_t*) 0 );
   (void) strftime( timebuf, sizeof(timebuf), RFC1123FMT, localtime( &now ) );
 
+  // check if running as root
+  if(geteuid() == 0)
+  {
+    printf("421 qwik-smtpd refuses to run as root!\r\n");
+    (void) fflush(stdout);
+    exit(1);
+  }
+
+  // set the defaults if config files did not exist
   if(!max_recipients) max_recipients = MAX_RECIPIENTS;
   if(!max_smtp_errors) max_smtp_errors = MAX_SMTP_ERRORS;
   if(!max_message_size || max_message_size == 0) max_message_size = MAX_MESSAGE_SIZE;
@@ -160,10 +161,12 @@ int main(int argc, char* argv[])
 
   strcpy(localIP,getConfig("localip"));
   strcpy(localHost,getConfig("localhost"));
+
+  // get the peer IP address. TODO: add support for IPv6
   strcpy(clientIP,getIP());
   setenv("REMOTE_ADDR",clientIP,1);
 
-  //get rcpthosts
+  // get rcpthosts
   getConfigMulti("rcpthosts");
 
   // TODO: convert the IP address into a hostname
@@ -242,7 +245,10 @@ int main(int argc, char* argv[])
             {
               if(x != NULL) out(500, "too many recipients");
             }
-	  // TODO: optional: run script to check for viruses
+          // possible check MD5 of this message and compare to previous
+          // messages' MD5s; and decide whether it is spam or not (or use
+          // that as additional criteria). too costly to run virus checker
+          // here.
           out(250, "message accepted for delivery");
           }
         }
@@ -295,7 +301,7 @@ int main(int argc, char* argv[])
       {
         clientState = GREETING;
         strcpy(clientHelo,arg2);
-	setenv("SMTP_HELO",arg2,1);
+        setenv("SMTP_HELO",arg2,1);
         out(250, "ok");
       }
       else if(!strcasecmp(arg1,"HELP"))
@@ -308,7 +314,7 @@ int main(int argc, char* argv[])
         strcpy(clientMailFrom,arg3);
         clientState = MAILFROM;
         strcpy(userName,arg3);
-	setenv("SMTP_MAIL_FROM",arg3,1);
+        setenv("SMTP_MAIL_FROM",arg3,1);
         if(!strcmp(arg3,"<>") )
         {
           // set EmailFrom to MAILER-DAEMON, so we know later...
@@ -326,11 +332,11 @@ int main(int argc, char* argv[])
       {
         if(clientState <= GREETING)
         {
-	  out(503,"need MAIL first");
+          out(503,"need MAIL first");
         }
         else
         {
-	  setenv("SMTP_RCPT_TO",arg3,1);
+          setenv("SMTP_RCPT_TO",arg3,1);
           if(clientRcpts > max_recipients)
           {
             out(550, "too many recipients");
@@ -338,7 +344,9 @@ int main(int argc, char* argv[])
           else
           {
             // stop some spammers by introducing a delay
-            if(clientRcpts > MAX_FAST_RCPTS || clientRcpts > max_recipients/2) sleep(1);
+            if(clientRcpts > MAX_FAST_RCPTS || clientRcpts > max_recipients/2)
+              sleep(1);
+
             // only accept mail to rcpthosts; ignore if no @ sign
             for(x = 0; x < cfgRcptHosts; x++)
             {
@@ -362,8 +370,8 @@ int main(int argc, char* argv[])
                 // checkpassword - checks if user exists
                 char line[1024];
                 char oldline[1024];
-		char *tok;
-		int i = 0;
+                char *tok;
+                int i = 0;
                 strcpy(oldline,"");
                 strcpy(line,"");
                 strcpy(pipecmd,"");
