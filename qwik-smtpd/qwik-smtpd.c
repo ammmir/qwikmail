@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.3
-   $Date: 2002-05-07 01:18:20 $ 
-   $Revision: 1.13 $
+   $Date: 2002-05-12 20:47:37 $ 
+   $Revision: 1.14 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -277,6 +277,7 @@ int main(int argc, char* argv[])
       {
         clientState = GREETING;
         strcpy(clientHelo,arg2);
+	setenv("SMTP_HELO",arg2,1);
         out(250, "ok");
       }
       else if(!strcasecmp(arg1,"HELP"))
@@ -289,6 +290,7 @@ int main(int argc, char* argv[])
         strcpy(clientMailFrom,arg3);
         clientState = MAILFROM;
         strcpy(userName,arg3);
+	setenv("SMTP_MAIL_FROM",arg3,1);
         if(!strcmp(arg3,"<>") )
         {
           // set EmailFrom to MAILER-DAEMON, so we know later...
@@ -310,6 +312,7 @@ int main(int argc, char* argv[])
         }
         else
         {
+	  setenv("SMTP_RCPT_TO",arg3,1);
           if(clientRcpts > max_recipients)
           {
             out(550, "too many recipients");
@@ -318,7 +321,7 @@ int main(int argc, char* argv[])
           {
             // stop some spammers by introducing a delay
             if(clientRcpts > MAX_FAST_RCPTS || clientRcpts > max_recipients/2) sleep(1);
-            // only accept mail to localHost; ignore if no @ sign
+            // only accept mail to rcpthosts; ignore if no @ sign
             for(x = 0; x < cfgRcptHosts; x++)
             {
               if(rcpthosts[x] != NULL && strstr(arg3,rcpthosts[x]))
@@ -328,20 +331,22 @@ int main(int argc, char* argv[])
               }
             }
 
-            if(found == 1)
+            if(strstr(arg3,"!"))
             {
-              if(strstr(arg3,"!"))
-              {
-                out(550, "relaying denied");
-              }
-              else if(!strstr(arg3,"@"))
-              {
-                out(553, "please use full email address");
-              }
-              else
-              {
+              out(550, "relaying denied");
+            }
+            else if(!strstr(arg3,"@"))
+            {
+              out(553, "please use full email address");
+	    }
+	    else if(found == 1)
+            {
                 // checkpassword - checks if user exists and reads .forward
                 char line[1024];
+                char oldline[1024];
+		char *tok;
+		int i = 0;
+                strcpy(oldline,"");
                 strcpy(line,"");
                 strcpy(pipecmd,"");
                 good = 0;
@@ -350,23 +355,33 @@ int main(int argc, char* argv[])
                 if( strcmp(arg3,"\\") && strcmp(arg3,"..") &&
                     strcmp(arg3,"/") && strcmp(arg3,"\"") &&
                     strcmp(arg3,"\'") && strcmp(arg3,"$") &&
+                    strcmp(arg3,";") && strcmp(arg3,"&") &&
+                    strcmp(arg3,"/") && strcmp(arg3,"!") &&
                     (chk = popen(pipecmd,"r")) != NULL)
                 {
                   fgets(line, sizeof(line), chk);
                   pclose(chk);
-                  if(!strncmp(line,"250",3)) good = 1;
+		  if(!strncmp(line,"250",3)) good = 1;
+		  if(!strncmp(line,"251",3)) good = 1;
                 }
+		strcpy(oldline,line);
                 if(good == 1) {
                   clientState = RCPTTO;
+		  for(tok = strtok(line,"<"); tok != NULL; tok = strtok(NULL,">"))
+                  {
+		    if(i == 1) {
+		    strcpy(arg3,tok);
+		    }
+		    i++;
+		  }
                   push(arg3);
                   alarm(rcpt_timeout);
                 } else {
                   alarm(rcpt_timeout);
                 }
                 isGood = 1;
-                printf("%s", line);
+                printf("%s", oldline);
                 (void) fflush(stdout);
-              }
             }
             else
             {

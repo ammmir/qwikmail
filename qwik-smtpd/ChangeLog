@@ -4,8 +4,9 @@
 - added a qmail-like checkpassword for checking RCPTs with host; will give
   error of user is not on host
 - improved checkpassword; added primitive support for .forward file users'
-  homedirs, which would result the daemon to spit out a 551 SMTP code for
+  homedirs, which would result the daemon to spit out a 251 SMTP code for
   forwarding mail
+- reworked RCPT TO code
 
 0.2
 ---

@@ -1,15 +1,13 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2002-04-28 21:55:30 $
-$Revision: 1.4 $
+$Date: 2002-05-12 20:47:37 $
+$Revision: 1.5 $
 
 - fix problem with rcpthosts file; a newline is required at the end for parsing
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
   are allowed to relay mail through us
 - bullet-proof test qwik-deliver.pl so that it works all around
-- rethink the alarm() calls in the code to make sure that the timeouts
-  actually work!
 - add a _lot_ of error checking in qwik-smtpd:
   - readability/writeability of files (config, queue, etc.)
   - disk space/memory
