@@ -6,6 +6,10 @@
 - added stuff against relaying; checks for ! character
 - added qmail-like "rcpthosts" config file; contains \n-separated list of
   domains to accept mail for
+- anti-spamming feature added: 1 second delay if number of RCPTs is greater
+  than half the value of max_recipients or if greater than MAX_FAST_RCPTS
+- if the message size is greater than what is allowed, the data file is
+  deleted using unlink()
 
 0.1
 ---
