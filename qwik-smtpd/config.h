@@ -22,6 +22,7 @@
 
 // checkpassword program path
 #define CHECKPASSWORD "/var/spool/qwik-smtpd/checkpassword"
+//#define CHECKPASSWORD "/home/amir/qwik-smtpd/checkpassword"
 
 /* change the -0800 and PST according to your timezone; the time format
    below is _supposed_ to be RFC 1123 compliant, but it really isn't! */

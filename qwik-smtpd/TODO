@@ -1,13 +1,13 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2002-05-12 20:47:37 $
-$Revision: 1.5 $
+$Date: 2002-05-27 22:51:45 $
+$Revision: 1.6 $
 
 - fix problem with rcpthosts file; a newline is required at the end for parsing
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
   are allowed to relay mail through us
-- bullet-proof test qwik-deliver.pl so that it works all around
+- bullet-proof test qwik-deliver.pl so that it works all around; remove fork()
 - add a _lot_ of error checking in qwik-smtpd:
   - readability/writeability of files (config, queue, etc.)
   - disk space/memory
@@ -16,7 +16,6 @@ $Revision: 1.5 $
 - configuration script, which asks the admin for values and automatically
   creates/updates the config files; aka an "installer" for the server
 - add some more ESMTP support, maybe some pipelining, etc.
-- add spam control or virus checking abilities after message has been sent;
-  such as running an external program to check if the message is spam, and
-  tell the server if the mail is acceptable or not
+- add virus checking abilities after message has been sent and/or during
+  an SMTP transaction
 - MD5 hashing/logging of messages

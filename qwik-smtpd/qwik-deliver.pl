@@ -3,8 +3,10 @@
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
 # (C) Copyright 2000-2002 by Amir Malik
-# $Date: 2002-04-28 22:15:18 $
-# $Revision: 1.7 $
+# $Date: 2002-05-27 22:51:45 $
+# $Revision: 1.8 $
+
+########### BIG FAT TODO::: remove fork() calls when delivering mail...
 
 # Assumptions: (please grep this file for MODIFY THIS and change)
 # installing in /home/qwik-smtpd
@@ -17,10 +19,9 @@
 # works fine for me :-) -- heck, sendmail's smtpd runs as root... hmm..
 
 use strict;
-use DBI;
 use Fcntl ':flock';
 use POSIX qw(setsid);
-use vars qw($dbh $killed $exp $pid);
+use vars qw($killed $exp $pid);
 
 # set a good umask
 umask(077);
@@ -35,6 +36,7 @@ close(PID);
 $SIG{TERM} = sub { $killed = 1; };
 $SIG{HUP} = sub { $killed = 1; };
 $SIG{INT} = sub { $killed = 1; };
+$SIG{USR1} = sub { $killed = 1; };
 $SIG{QUIT} = sub { $killed = 1; };
 $SIG{STOP} = sub { $killed = 1; };
 $SIG{CHLD} = sub { wait };
@@ -44,17 +46,17 @@ $SIG{CHLD} = sub { wait };
 my $domain = getConfig('localhost');
 my $hostname = getConfig('localhost');
 my $queuedir = getConfig('queuedir') || '/var/spool/qwik-smtpd';
-my $delivery = getConfig('delivery') || 2;
+my $delivery = getConfig('delivery') || 2; # maildir delivery by default
 my $maildir = getConfig('homemaildir') || 'Maildir'; # maildir under user's dir
 my $varspool = getConfig('spooldir') || '/var/spool/mail';
 my $homedirs = '/home';
 
 if(!$domain || !$hostname || !$queuedir) {
   print "Error: configuration is incomplete\n";
-  exit(0);
+  exit(1);
 }
 
-#######################
+################# NO CONFIGURATION NEEDED BELOW THIS POINT ##############
 
 $pid = 0;
 $killed = 0;
@@ -148,7 +150,7 @@ while(1) {
 
       if(!$localuser || $localuser =~ /(.*)\@$domain/i) {
         my $from;
-        # qwik-smtpd hack via SquirrelMail
+        # hack for SquirrelMail
         $message =~ m/X-LocalUser: (.*)/;
         $from = $1;
         $message =~ m/Message-ID: <(.+?)>/;
@@ -157,7 +159,7 @@ while(1) {
 
 	# MODIFY THIS BELOW; this is just a dummy log...
 	open(Z,">>/tmp/sm.log");
-	print Z "\nFROM = $from\nMSG-ID: $msgid\nTo = $to\n";
+	print Z "\nFrom = $from\nMsg-ID = $msgid\nTo = $to\n";
 	close(Z);
 
 	if($from =~ /\@$domain/i) {

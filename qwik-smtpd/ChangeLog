@@ -2,11 +2,19 @@
 ---
 
 - added a qmail-like checkpassword for checking RCPTs with host; will give
-  error of user is not on host
+  error if user is not on host
 - improved checkpassword; added primitive support for .forward file users'
   homedirs, which would result the daemon to spit out a 251 SMTP code for
   forwarding mail
 - reworked RCPT TO code
+- added /etc/qwik-smtpd/blacklists ... a file with the format:
+  server,errormsg
+  example:
+  relays.ordb.org,Your IP has been blacklisted.
+  the checkpassword program checks (for each recipient, albeit VERY slow if
+  you have 10 RCPTs!) the IP in each blacklist, until a match is found;
+  it loops until all servers have been searched, and if none found, then
+  continues
 
 0.2
 ---
