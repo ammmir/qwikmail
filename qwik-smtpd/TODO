@@ -1,15 +1,13 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2004-07-20 04:31:29 $
-$Revision: 1.12 $
+$Date: 2004-07-24 04:15:08 $
+$Revision: 1.13 $
 
 - run checkpassword *after* RCPT TO's, but before DATA command, to minimize
   DoS attacks against checkpassword program; or fork a kid and talk to it
   via SysV IPC... if not that, throttle RCPT commands (sleep?), and as a
   last resort, make the checkpassword binary leaner (ie. rewrite in C)
-- fix problem with rcpthosts file; a newline is required at the end for parsing
-  (not a big deal... might scare some sysadmins at first)
 - add something like /etc/aliases or equivalent
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
   are allowed to relay mail through us

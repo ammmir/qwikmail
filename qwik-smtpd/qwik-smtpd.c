@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2003-11-13 21:12:26 $ 
-   $Revision: 1.21 $
+   $Date: 2004-07-24 04:15:08 $ 
+   $Revision: 1.22 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -641,11 +641,11 @@ int getConfigMulti(char option[])
     {
       if(c == '\n')
       {
-        cfgRcptHosts++;
         line[i] = '\0';
         rcpthosts[cfgRcptHosts] = (char*) malloc(64);
         strcpy(rcpthosts[cfgRcptHosts],line);
         i = -1;
+        cfgRcptHosts++;
         strcpy(line,"");
       }
       else
