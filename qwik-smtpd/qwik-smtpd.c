@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
    Version: 0.2
-   $Date: 2002-03-13 05:23:24 $ 
-   $Revision: 1.8 $
+   $Date: 2002-03-13 05:26:08 $ 
+   $Revision: 1.9 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -31,12 +31,10 @@
    TODO: audit the code for security issues, performance problems, lockups,
          possible bottlenecks, etc.; stop using printf(), use a less memory-
          hogging function like puts(), etc.; get gethostbyaddr() working;
-         allow relaying to a bigger subset of hosts; implement a "rcpthosts"
-         feature like qmail's control/rcpthosts file
+         allow relaying to a bigger subset of hosts
 
    All patches, improvements, criticism, suggestions, and comments are welcome
-   and encouraged! But please remember that this is my first "real" project in
-   C!
+   and encouraged!
 */
 
 // Before we begin: ``Is it possible to have an SMTP server in less than 500
@@ -56,7 +54,6 @@ int clientRcpts = 0;
 int messageSize = 0;
 int cfgRcptHosts = 0;
 char *rcpthosts[100];
-
 
 // functions
 extern int parseInput(char [],char [],char [], char []);
@@ -519,6 +516,7 @@ int getConfig(char option[])
   }
 }
 
+// TODO: combine this function with getConfig to a more generic one
 int getConfigMulti(char option[])
 {
   int c;
