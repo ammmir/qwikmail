@@ -16,6 +16,7 @@
   it loops until all servers have been searched, and if none found, then
   continues
 - updated mailbomb.pl for more options and better UI (added time counting :)
+- ESMTP EHLO now reports the correct SIZE (max_message_size) instead of 0
 
 0.2
 ---
