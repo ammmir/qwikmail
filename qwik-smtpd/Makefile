@@ -18,6 +18,10 @@ clean:
 	@${SLEEP} 0
 
 install: dist
+	@echo "We're sorry, but you will have to manually install this beast!"
+	@echo "See INSTALL for details on how to install"
+
+sdlkfjsldfinstall: dist
 	${MKDIR} /etc/qwik-smtpd
 	${CP} -u checkpassword /var/spool/qwik-smtpd
 	${MKDIR} /var/spool/qwik-smtpd

@@ -9,6 +9,13 @@ quickie install
 - edit config.h and set the DEFAULTS!!
 - run make
 - if ok, run make install
+  - or do it the MANUAL way:
+    - mkdir /var/spool/qwik-smtpd
+    - mkdir /var/spool/qwik-smtpd/control
+    - mkdir /var/spool/qwik-smtpd/messages
+    - mkdir /etc/qwik-smtpd
+    - and now copy some stuff/config files there
+    - copy checkpassword to its appropriate location
 - look over the files in /etc/qwik-smtpd
 - append the content of the included inetd.conf or xinetd.conf to your
   appropriate file in /etc

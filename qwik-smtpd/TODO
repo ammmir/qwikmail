@@ -1,10 +1,11 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2002-05-27 22:51:45 $
-$Revision: 1.6 $
+$Date: 2002-06-01 23:49:34 $
+$Revision: 1.7 $
 
 - fix problem with rcpthosts file; a newline is required at the end for parsing
+- add something like /etc/aliases or equivalent
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
   are allowed to relay mail through us
 - bullet-proof test qwik-deliver.pl so that it works all around; remove fork()
