@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.3
-   $Date: 2002-04-28 21:55:30 $ 
-   $Revision: 1.12 $
+   $Date: 2002-05-07 01:18:20 $ 
+   $Revision: 1.13 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -340,10 +340,11 @@ int main(int argc, char* argv[])
               }
               else
               {
-                // either the domain part = localHost OR there is no @ sign,
-                // which means that the domain = localHost
-                good = 0;
+                // checkpassword - checks if user exists and reads .forward
+                char line[1024];
+                strcpy(line,"");
                 strcpy(pipecmd,"");
+                good = 0;
                 alarm(0);
                 sprintf(pipecmd, "%s \"%s\"", CHECKPASSWORD, arg3);
                 if( strcmp(arg3,"\\") && strcmp(arg3,"..") &&
@@ -351,29 +352,27 @@ int main(int argc, char* argv[])
                     strcmp(arg3,"\'") && strcmp(arg3,"$") &&
                     (chk = popen(pipecmd,"r")) != NULL)
                 {
-                  char line[128];
-                  strcpy(line,"");
                   fgets(line, sizeof(line), chk);
                   pclose(chk);
-                  if(!strcmp(line,"success!")) good = 1;
+                  if(!strncmp(line,"250",3)) good = 1;
                 }
-
                 if(good == 1) {
                   clientState = RCPTTO;
                   push(arg3);
-                  out(250, "ok");
                   alarm(rcpt_timeout);
                 } else {
-                  out(550, "user not here");
                   alarm(rcpt_timeout);
                 }
+                isGood = 1;
+                printf("%s", line);
+                (void) fflush(stdout);
               }
             }
             else
             {
               if(!strcasecmp(clientIP,"127.0.0.1") ||
                  !strcasecmp(clientIP,localIP)) {
-                // allow only local relaying of mail
+                // only allow loopback or a particular IP to relay mail
                 clientState = RCPTTO;
                 push(arg3);
                 out(250, "ok");
