@@ -3,6 +3,7 @@
 
 - cleaned up qwik-deliver.pl and qwik-smtpd.c
 - removed unused config struct from server
+- added stuff against relaying; checks for ! character
 
 0.1
 ---
