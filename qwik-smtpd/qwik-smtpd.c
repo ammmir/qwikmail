@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
    Version: 0.1
-   $Date: 2002-01-04 17:40:23 $ 
-   $Revision: 1.3 $
+   $Date: 2002-02-07 02:55:04 $ 
+   $Revision: 1.4 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -75,20 +75,6 @@ int getIP()
   sockname = inet_ntoa(name_in->sin_addr);
   return (int) sockname;
 }
-
-// the configuration structure; to store the config info from config file
-struct config {
-  char localhost[128];
-  char localip[64];
-  char greeting[128];
-  int maxmsgsize;
-  int maxrcpts;
-  int timeouts;
-  int greetingtimeout;
-  int mailfromtimeout;
-  int rcpttotimeout;
-  int datatimeout
-} server;
 
 int main(int argc, char* argv[])
 {
@@ -201,6 +187,7 @@ int main(int argc, char* argv[])
                 (void) fflush(fpout);
                 fprintf(fpout,"\n");
                 (void) fflush(fpout);
+                // TODO: add logging mechanism here
                 //syslog(LOG_INFO,"From: %s To: %s ClientIP: %s %s",
                 //       clientMailFrom, clientRcptTo[x], clientIP, messageID);
               }
@@ -306,7 +293,8 @@ int main(int argc, char* argv[])
             }
             else
             {
-              // at the moment only localHost can receive mail
+              // at the moment only localHost can relay/receive mail
+              // TODO: add "real" relay support; rcpthosts-style
               if(!strcasecmp(clientIP,"127.0.0.1") ||
                  !strcasecmp(clientIP,localIP)) {
                 // allow only local relaying of mail
