@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2004-07-24 04:28:54 $ 
-   $Revision: 1.23 $
+   $Date: 2004-09-10 06:31:38 $ 
+   $Revision: 1.24 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -64,13 +64,13 @@ char pipecmd[1024];
 // functions
 extern int parseInput(char [],char [],char [], char []);
 extern int getline(char [], int);
-extern int getConfig(char []);
-extern int getConfigMulti(char []);
+extern char* getConfig(char []);
+extern char* getConfigMulti(char []);
 extern int out(int, char[]);
 extern int push(char[]);
 extern int catch_alarm(int);
 
-int getIP()
+char* getIP()
 {
   struct sockaddr name;
   struct sockaddr_in *name_in;
@@ -80,7 +80,7 @@ int getIP()
   getpeername(0, &name, &namelen);
   name_in = (struct sockaddr_in *)&name;
   sockname = inet_ntoa(name_in->sin_addr);
-  return (int) sockname;
+  return sockname;
 }
 
 int main(int argc, char* argv[])
@@ -131,7 +131,6 @@ int main(int argc, char* argv[])
 
   FILE *Log;
 
-  int x = 0;
   int myPid = getpid(); // get our pid for a little more randomness!
   time_t t1;
   char *s;
@@ -185,7 +184,7 @@ int main(int argc, char* argv[])
   printf("220 %s ready\r\n", greeting);
   (void) fflush(stdout);
 
-  signal(SIGALRM, catch_alarm);
+  signal(SIGALRM, (void*)catch_alarm);
 
   // TODO: use another mechanism for logging; syslog dumps core
   // TODO: maybe something like /var/log/qwik-smtpd
@@ -221,35 +220,27 @@ int main(int argc, char* argv[])
           }
           else
           {
-            // unnecessary check for max_rec.
-            if(clientRcpts < max_recipients)
+            for(i = 0; i < max_recipients; i++)
             {
-              for(x = 0; x < max_recipients; x++)
-              {
-                if(clientRcptTo[x] == NULL) break;
-                fprintf(fpout,clientRcptTo[x]);
-                (void) fflush(fpout);
-                fprintf(fpout,"\n");
-                (void) fflush(fpout);
-                // TODO: add logging mechanism here
-                //syslog(LOG_MAIL,"From: %s To: %s ClientIP: %s %s",
-                //       clientMailFrom, clientRcptTo[x], clientIP, messageID);
-                //strcpy(logline,"");
-                //sprintf(logline, "%s qwik-smtpd[%s] %s %s From: %s To: %s", timebuf, myPid, clientIP, messageID, clientMailFrom, clientRcptTo[x]);
-                //fprintf(Log,logline);
-                //(void) fflush(Log);
-              }
-              fclose(fpout);
+              if(clientRcptTo[i] == NULL) break;
+              fprintf(fpout,clientRcptTo[i]);
+              (void) fflush(fpout);
+              fprintf(fpout,"\n");
+              (void) fflush(fpout);
+              // TODO: add logging mechanism here
+              //syslog(LOG_MAIL,"From: %s To: %s ClientIP: %s %s",
+              //       clientMailFrom, clientRcptTo[x], clientIP, messageID);
+              //strcpy(logline,"");
+              //sprintf(logline, "%s qwik-smtpd[%s] %s %s From: %s To: %s", timebuf, myPid, clientIP, messageID, clientMailFrom, clientRcptTo[x]);
+              //fprintf(Log,logline);
+              //(void) fflush(Log);
             }
-            else
-            {
-              if(x != NULL) out(500, "too many recipients");
-            }
-          // possible check MD5 of this message and compare to previous
-          // messages' MD5s; and decide whether it is spam or not (or use
-          // that as additional criteria). too costly to run virus checker
-          // here.
-          out(250, "message accepted for delivery");
+            fclose(fpout);
+            // possible check MD5 of this message and compare to previous
+            // messages' MD5s; and decide whether it is spam or not (or use
+            // that as additional criteria). too costly to run virus checker
+            // here.
+            out(250, "message accepted for delivery");
           }
         }
         clientState = GREETING;
@@ -264,7 +255,7 @@ int main(int argc, char* argv[])
               inputLine[i-1] = inputLine[i];
             }
             if(i == strlen(inputLine)) {
-              inputLine[i] = "\0";
+              inputLine[i] = '\0';
               break;
             }
           }
@@ -348,9 +339,9 @@ int main(int argc, char* argv[])
               sleep(1);
 
             // only accept mail to rcpthosts; ignore if no @ sign
-            for(x = 0; x < cfgRcptHosts; x++)
+            for(i = 0; i < cfgRcptHosts; i++)
             {
-              if(rcpthosts[x] != NULL && strstr(arg3,rcpthosts[x]))
+              if(rcpthosts[i] != NULL && strstr(arg3,rcpthosts[i]))
               {
                 found = 1;
                 break;
@@ -393,7 +384,7 @@ int main(int argc, char* argv[])
 		strcpy(oldline,line);
                 if(good == 1) {
                   clientState = RCPTTO;
-		  for(tok = strtok(line,"<"); tok != NULL; tok = strtok(NULL,">"))
+		  for(tok = (char*) strtok(line,"<"); tok != NULL; tok = (char*) strtok(NULL,">"))
                   {
 		    if(i == 1) {
 		    strcpy(arg3,tok);
@@ -411,8 +402,8 @@ int main(int argc, char* argv[])
             }
             else
             {
-              int relayclient = getenv("RELAYCLIENT");
-              if( relayclient != NULL && relayclient != 0) {
+              int relayclient = (int)getenv("RELAYCLIENT");
+              if(relayclient != 0) {
                 // relaying allowed to this IP address
                 clientState = RCPTTO;
                 push(arg3);
@@ -484,10 +475,10 @@ int main(int argc, char* argv[])
           strcpy(clientMailFrom,"");
           //strcpy(clientRcptTo,"");
 
-          for(x = 0; x < clientRcpts; x++)
+          for(i = 0; i < clientRcpts; i++)
           {
             //if(clientRcptTo[x] == NULL) break;
-            strcpy(clientRcptTo[x],"");
+            strcpy(clientRcptTo[i],"");
           }
 
           clientRcpts = 0;
@@ -589,7 +580,7 @@ int push(char *data)
   clientRcpts++;
 }
 
-int getConfig(char option[])
+char* getConfig(char option[])
 {
   int c;
   int i = 0;
@@ -619,7 +610,7 @@ int getConfig(char option[])
 }
 
 // TODO: combine this function with getConfig to a more generic one
-int getConfigMulti(char option[])
+char* getConfigMulti(char option[])
 {
   int c;
   int i = 0;

@@ -1,8 +1,8 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2004-07-24 04:28:54 $
-$Revision: 1.14 $
+$Date: 2004-09-10 06:31:38 $
+$Revision: 1.15 $
 
 - run checkpassword *after* RCPT TO's, but before DATA command, to minimize
   DoS attacks against checkpassword program; or fork a kid and talk to it
@@ -17,7 +17,6 @@ $Revision: 1.14 $
   - disk space/memory
   - NFS-safe writes; check bytes written, etc.
   - load average
-- minimize warning messages during compilation
 - add some more ESMTP support, maybe some pipelining, etc.
 - add virus checking abilities after message has been sent and/or during
   an SMTP transaction
