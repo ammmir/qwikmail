@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2004-10-21 04:34:05 $ 
-   $Revision: 1.25 $
+   $Date: 2004-10-31 02:31:47 $ 
+   $Revision: 1.26 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -448,9 +448,9 @@ int main(int argc, char* argv[])
           }
           else
           {
-            fprintf(fpout,Received);
+            fprintf(fpout,"%s", Received);
             (void) fflush(fpout);
-            fprintf(fpout,messageID);
+            fprintf(fpout,"%s", messageID);
             (void) fflush(fpout);
             out(354, "type away!");
             alarm(data_timeout);
@@ -522,7 +522,7 @@ int getline(char line[], int max)
 
   while((c = getchar()) != EOF)
   {
-    if(c == '\r') {
+    if(c == '\r' || c == '\0') {
       // do nothing
     } else if(clientState < DATA && gotSpace == 1 && c == ' ') {
       // do nothing
