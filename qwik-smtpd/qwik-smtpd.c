@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.3
-   $Date: 2002-06-15 23:35:21 $ 
-   $Revision: 1.16 $
+   $Date: 2002-06-15 23:43:45 $ 
+   $Revision: 1.17 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
   // load config limits
   int max_recipients = atoi(getConfig("maxrcpts"));
   int max_smtp_errors = atoi(getConfig("maxsmtperrors"));
-  long double max_message_size = atof(getConfig("databytes"));
+  long max_message_size = atol(getConfig("databytes"));
 
   // load config timeouts
   int connect_timeout = atoi(getConfig("connect_timeout"));
@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
 	    }
 	    else if(found == 1)
             {
-                // checkpassword - checks if user exists and reads .forward
+                // checkpassword - checks if user exists
                 char line[1024];
                 char oldline[1024];
 		char *tok;
@@ -352,7 +352,6 @@ int main(int argc, char* argv[])
                 strcpy(pipecmd,"");
                 good = 0;
                 alarm(0);
-                //sprintf(pipecmd, "%s \"%s\"", CHECKPASSWORD, arg3);
                 sprintf(pipecmd, "%s", CHECKPASSWORD);
                 if( strcmp(arg3,"\\") && strcmp(arg3,"..") &&
                     strcmp(arg3,"/") && strcmp(arg3,"\"") &&
