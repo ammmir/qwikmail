@@ -12,6 +12,8 @@
     MAX_RECIPIENTS - the max number of recipients a message can have
     MAX_SMTP_ERRORS - the max number of errors in an SMTP transaction before
                       the server disconnects the client
+
+   Note: All directory paths do NOT include the trailing slash! :)
 */
 
 // where the root of the mail queue directory is
@@ -22,7 +24,6 @@
 
 // checkpassword program path
 #define CHECKPASSWORD "/var/spool/qwik-smtpd/checkpassword"
-//#define CHECKPASSWORD "/home/amir/qwik-smtpd/checkpassword"
 
 /* change the -0800 and PST according to your timezone; the time format
    below is _supposed_ to be RFC 1123 compliant, but it really isn't! */
