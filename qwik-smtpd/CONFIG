@@ -21,6 +21,10 @@ smtpgreeting         will default to localhost config
                       value if not set; eg., MyDomain
                       will cause the daemon to output:
                       220 MyDomain SMTP service ready
+rcpthosts            a list of \n separated hostnames
+                      that this server accepts mail for;
+		      modeled after qmail's rcpthosts;
+		      a \n is REQUIRED at the EOF
 
 
 Limits

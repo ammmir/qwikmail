@@ -3,8 +3,8 @@
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
 # (C) Copyright 2000-2002 by Amir Malik
-# $Date: 2002-04-28 21:55:30 $
-# $Revision: 1.5 $
+# $Date: 2002-04-28 22:00:21 $
+# $Revision: 1.6 $
 
 use strict;
 use DBI;
@@ -89,7 +89,7 @@ while(1) {
       }
 
     unless($pid = fork) { # start of fork()
-      open(STDERR, ">>/opt/spool/qwik-deliver.log");
+      open(STDERR, ">>/opt/spool/qwik-deliver.log"); # MODIFY THIS
       if($to =~ /(.*)\@$domain/i && !$<) {
         if(-e "$homedirs/$localuser/") {
           my($x,$uid,$gid);
@@ -144,10 +144,13 @@ while(1) {
         $message =~ m/Message-ID: <(.+?)>/;
         my $msgid = $1;
         $from =~ s/(\/|\\|\.\.|\'|\")//g;
-open(Z,">>/tmp/sm.log");
-print Z "\nFROM = $from\nMSG-ID: $msgid\nTo = $to\n";
-close(Z);
-        if($from =~ /\@$domain/i) {
+
+	# MODIFY THIS BELOW; this is just a dummy log...
+	open(Z,">>/tmp/sm.log");
+	print Z "\nFROM = $from\nMSG-ID: $msgid\nTo = $to\n";
+	close(Z);
+
+	if($from =~ /\@$domain/i) {
           $from = "MAILER-DAEMON@" . $domain;
         } else {
           $from .= "@$domain";
