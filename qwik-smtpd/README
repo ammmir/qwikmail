@@ -1,0 +1,28 @@
+                _ _                       _             _ 
+  __ ___      _(_) | __     ___ _ __ ___ | |_ _ __   __| |
+ / _` \ \ /\ / / | |/ /____/ __| '_ ` _ \| __| '_ \ / _` |
+| (_| |\ V  V /| |   <_____\__ \ | | | | | |_| |_) | (_| |
+ \__, | \_/\_/ |_|_|\_\    |___/_| |_| |_|\__| .__/ \__,_|
+    |_|                                      |_|          
+
+
+Q: What is it?
+A: It is an SMTP (mail) server that supports SMTP and ESMTP. Once finished,
+   it will be very secure, hopefully with the same reputation as qmail.
+
+It supports the following standards:
+- minimal SMTP compliance; full SMTP compliance coming, and rudimentary ESMTP
+  compliance still in the works
+- supports delivery to either mbox files or Maildirs
+
+QwikMail SMTP server
+ part of the Qwik SQL Webmail Server project
+see http://qwikmail.sourceforge.net/smtpd/ for more info on qwik-smtpd.
+
+see the file INSTALL on how to install this thingy.
+see the file COPYING for the GNU General Public License.
+
+Questions, comments, criticisms, bugs? Email to: amir142@users.sourceforge.net
+
+Thanks for using qwik-smtpd!
+Amir Malik

@@ -1,0 +1,10 @@
+0.1
+---
+
+- first official release
+- supports minimal ESMTP functionality, except that it does not "send" mail,
+  it uses an external program, such as sendmail to actually send mail, but
+  it does gracefully receive mail!
+- supports both mbox and Maildir formats; although Maildir is preferred
+- very primitive "selective" relaying; need to change source code; this will
+  be changed in the next release

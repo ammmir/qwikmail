@@ -1,0 +1,39 @@
+Configuration Files
+-------------------
+
+In qwik-smtpd's configuration file directory (eg. /etc/qwik-smtpd),
+you can add any of the following files with the appropriate content
+and qwik-smtpd will use the configuration value present in that file
+instead of its default value. Just in case you are curious what the
+defaults are, you can look at the config.h source file.
+
+At the moment, you MUST have two files in that directory, the localip
+and localhost configration files.
+
+
+Parameters
+
+localip              local IP address of machine;
+                      TODO: make this auto detected
+localhost            accept mail for this domain;
+                      TODO: accept mail for >1 domain
+smtpgreeting         will default to localhost config
+                      value if not set; eg., MyDomain
+                      will cause the daemon to output:
+                      220 MyDomain SMTP service ready
+
+
+Limits
+
+max_recipients       max # of recipients per message
+max_smtp_errors      max # of bad smtp cmds before
+                      disconnecting a client
+max_message_size     max size in bytes of a message
+
+
+Timeouts (in seconds)
+
+connect_timeout      time before greeting has been issued
+mail_timeout         before MAIL FROM has been issued
+rcpt_timeout         before RCPT TO has been issued
+data_timeout         before DATA has been issued
