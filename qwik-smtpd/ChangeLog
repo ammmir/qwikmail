@@ -1,6 +1,9 @@
 0.4
 ---
 
+- removed hard-coded 127.0.0.1 and localIP for allowing relaying. we now
+  require the RELAYCLIENT environment variable (a la Qmail) to be set
+- fixed rcpthosts file parser. last line containing \n no longer needed
 - fixed "the stupid Makefile." make, make clean, and make install now work
 
 0.3

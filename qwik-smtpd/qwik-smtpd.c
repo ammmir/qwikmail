@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2004-07-24 04:15:08 $ 
-   $Revision: 1.22 $
+   $Date: 2004-07-24 04:28:54 $ 
+   $Revision: 1.23 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -411,10 +411,9 @@ int main(int argc, char* argv[])
             }
             else
             {
-              if(!strcasecmp(clientIP,"127.0.0.1") ||
-                 !strcasecmp(clientIP,localIP)) {
-                // only allow loopback or a particular IP to relay mail
-		// TODO: remove hard-coded localhost value
+              int relayclient = getenv("RELAYCLIENT");
+              if( relayclient != NULL && relayclient != 0) {
+                // relaying allowed to this IP address
                 clientState = RCPTTO;
                 push(arg3);
                 out(250, "ok");

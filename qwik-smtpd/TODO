@@ -1,27 +1,27 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2004-07-24 04:15:08 $
-$Revision: 1.13 $
+$Date: 2004-07-24 04:28:54 $
+$Revision: 1.14 $
 
 - run checkpassword *after* RCPT TO's, but before DATA command, to minimize
   DoS attacks against checkpassword program; or fork a kid and talk to it
   via SysV IPC... if not that, throttle RCPT commands (sleep?), and as a
   last resort, make the checkpassword binary leaner (ie. rewrite in C)
+- check MX record for domain given in HELO/EHLO
 - add something like /etc/aliases or equivalent
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
   are allowed to relay mail through us
-- bullet-proof test qwik-deliver.pl so that it works all around; remove fork()
 - add a _lot_ of error checking in qwik-smtpd:
   - readability/writeability of files (config, queue, etc.)
   - disk space/memory
   - NFS-safe writes; check bytes written, etc.
+  - load average
 - minimize warning messages during compilation
-- configuration script, which asks the admin for values and automatically
-  creates/updates the config files; aka an "installer" for the server
 - add some more ESMTP support, maybe some pipelining, etc.
 - add virus checking abilities after message has been sent and/or during
   an SMTP transaction
 - MD5 hashing/logging of messages
 - add a relay count hopper... so that we don't infinitely loop messages!!!
 - add support for IPv6
+- bullet-proof test qwik-deliver.pl so that it works all around; remove fork()
