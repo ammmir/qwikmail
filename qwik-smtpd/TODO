@@ -1,0 +1,16 @@
+qwik-smtpd TODO
+---------------
+
+$Date: 2002-02-27 02:22:14 $
+$Revision: 1.1 $
+
+- rethink the alarm() calls in the code to make sure that the timeouts
+  actually work!
+- minimize warning messages during compilation
+- configuration script, which asks the admin for values and automatically
+  creates/updates the config files; aka an "installer" for the server
+- add some more ESMTP support, maybe some pipelining, etc.
+- add spam control or virus checking abilities after message has been sent;
+  such as running an external program to check if the message is spam, and
+  tell the server if the mail is acceptable or not
+- MD5 hashing/logging of messages
