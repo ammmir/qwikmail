@@ -3,9 +3,9 @@
                 this server complies with RFC-821 section 4.5.1 Minimum
                 Implementation -- implementing all the required functionality
                 of an SMTP server
-   Version: 0.2
-   $Date: 2002-03-19 00:12:12 $ 
-   $Revision: 1.11 $
+   Version: 0.3
+   $Date: 2002-04-28 21:55:30 $ 
+   $Revision: 1.12 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -48,12 +48,18 @@
 int isGood = 0;
 int badCmds = 0;
 int clientState = CONNECT;
-char clientMailFrom[64];
+char clientMailFrom[1024];
 char *clientRcptTo[100];
 int clientRcpts = 0;
 int messageSize = 0;
 int cfgRcptHosts = 0;
 char *rcpthosts[100];
+int logging = 1;
+char logline[1024];
+
+// checkpassword
+int good;
+char pipecmd[1024];
 
 // functions
 extern int parseInput(char [],char [],char [], char []);
@@ -119,6 +125,11 @@ int main(int argc, char* argv[])
   char messageID[128];
   char Received[128];
   FILE *fpout;
+
+  FILE *chk;
+
+  FILE *Log;
+
   int x = 0;
   int myPid = getpid(); // get our pid for a little more randomness!
   time_t t1;
@@ -159,7 +170,10 @@ int main(int argc, char* argv[])
   // TODO: use another mechanism for logging; syslog dumps core
   // TODO: maybe something like /var/log/qwik-smtpd
   // open the syslog connection for logging
-  // openlog("qwik-smtpd",LOG_PID,LOG_MAIL);
+  //openlog("qwik-smtpd",LOG_PID,LOG_MAIL);
+
+  // our own logging
+  //if((Log = fopen("/opt/spool/qwik-smtpd.log","a")) == NULL) logging = 0;
 
   alarm(connect_timeout);
 
@@ -198,8 +212,12 @@ int main(int argc, char* argv[])
                 fprintf(fpout,"\n");
                 (void) fflush(fpout);
                 // TODO: add logging mechanism here
-                //syslog(LOG_INFO,"From: %s To: %s ClientIP: %s %s",
+                //syslog(LOG_MAIL,"From: %s To: %s ClientIP: %s %s",
                 //       clientMailFrom, clientRcptTo[x], clientIP, messageID);
+                //strcpy(logline,"");
+                //sprintf(logline, "%s qwik-smtpd[%s] %s %s From: %s To: %s", timebuf, myPid, clientIP, messageID, clientMailFrom, clientRcptTo[x]);
+                //fprintf(Log,logline);
+                //(void) fflush(Log);
               }
               fclose(fpout);
             }
@@ -324,10 +342,31 @@ int main(int argc, char* argv[])
               {
                 // either the domain part = localHost OR there is no @ sign,
                 // which means that the domain = localHost
-                clientState = RCPTTO;
-                push(arg3);
-                out(250, "ok");
-                alarm(rcpt_timeout);
+                good = 0;
+                strcpy(pipecmd,"");
+                alarm(0);
+                sprintf(pipecmd, "%s \"%s\"", CHECKPASSWORD, arg3);
+                if( strcmp(arg3,"\\") && strcmp(arg3,"..") &&
+                    strcmp(arg3,"/") && strcmp(arg3,"\"") &&
+                    strcmp(arg3,"\'") && strcmp(arg3,"$") &&
+                    (chk = popen(pipecmd,"r")) != NULL)
+                {
+                  char line[128];
+                  strcpy(line,"");
+                  fgets(line, sizeof(line), chk);
+                  pclose(chk);
+                  if(!strcmp(line,"success!")) good = 1;
+                }
+
+                if(good == 1) {
+                  clientState = RCPTTO;
+                  push(arg3);
+                  out(250, "ok");
+                  alarm(rcpt_timeout);
+                } else {
+                  out(550, "user not here");
+                  alarm(rcpt_timeout);
+                }
               }
             }
             else
@@ -367,6 +406,8 @@ int main(int argc, char* argv[])
           sprintf(messageFile, "%s/messages/%d.%d", QUEUE_DIR, s, myPid);
           sprintf(messageID, "Message-ID: <%d.%d.qwikmail@%s>\n", s,
                   myPid, localHost);
+          t1 = time( (time_t *) 0 );
+          (int*) s = time(&t1);
           sprintf(Received,"Received: from %s (HELO %s) (%s) by %s with SMTP; %s\n",
                   clientHost, clientHelo, clientIP, localHost, timebuf);
           if((fpout = fopen(messageFile,"w")) == NULL)
@@ -444,15 +485,22 @@ int getline(char line[], int max)
 {
   int nch = 0;
   int c;
+  int gotSpace = 0;
   max = max - 1; // leave room for '\0'
 
   while((c = getchar()) != EOF)
   {
     if(c == '\r') {
       // do nothing
+    } else if(clientState < DATA && gotSpace == 1 && c == ' ') {
+      // do nothing
+      gotSpace = 0;
     } else {
       if(c == '\n') break;
-      if(clientState < DATA && c == ':') c = ' ';
+      if(clientState < DATA && c == ':') {
+        gotSpace = 1;
+        c = ' ';
+      }
 
       if(nch < max)
       {

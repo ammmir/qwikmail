@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <netdb.h>
+//#include <syslog.h>
 
 // state values for alarm() timeouts
 #define CONNECT  0  // client just connected; 220 sent

@@ -14,12 +14,12 @@ default_target: dist
 clean:
 	@echo "Cleaning up..."
 	${RM} -f qwik-smtpd
-	${CHMOD} -x qwik-deliver.pl mailbomb.pl myip.sh
+	${CHMOD} -x qwik-deliver.pl mailbomb.pl myip.sh checkpassword
 	@${SLEEP} 0
 
 install: dist
 	${MKDIR} /etc/qwik-smtpd
-	${CP} 
+	${CP} -u checkpassword /var/spool/qwik-smtpd
 	${MKDIR} /var/spool/qwik-smtpd
 	${MKDIR} /var/spool/qwik-smtpd/control
 	${MKDIR} /var/spool/qwik-smtpd/messages
@@ -46,7 +46,7 @@ dist: clean
 	@echo "Compiling..."
 	${GCC} -O2 -o qwik-smtpd qwik-smtpd.c
 	@echo ""
-	${CHMOD} +x qwik-deliver.pl mailbomb.pl myip.sh
+	${CHMOD} +x qwik-deliver.pl mailbomb.pl myip.sh checkpassword
 	@echo ""
 	@echo "Congrats! qwik-smtpd compiled successfully."
 	@echo ""

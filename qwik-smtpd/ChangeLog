@@ -1,3 +1,9 @@
+0.3
+---
+
+- added a qmail-like checkpassword for checking RCPTs with host; will give
+  error of user is not on host
+
 0.2
 ---
 

@@ -3,14 +3,23 @@
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
 # (C) Copyright 2000-2002 by Amir Malik
-# $Date: 2002-03-13 05:23:24 $
-# $Revision: 1.4 $
+# $Date: 2002-04-28 21:55:30 $
+# $Revision: 1.5 $
 
 use strict;
 use DBI;
 use Fcntl ':flock';
 use POSIX qw(setsid);
 use vars qw($dbh $killed $exp $pid);
+
+# set a good umask
+umask(077);
+
+# write pid
+my $pidfile = "/home/qwik-smtpd/qwik-deliver.pid";
+open(PID,">$pidfile");
+print PID "$$\n";
+close(PID);
 
 # catch these signals
 $SIG{TERM} = sub { $killed = 1; };
@@ -24,8 +33,8 @@ $SIG{CHLD} = sub { wait };
 
 my $domain = getConfig('localhost');
 my $hostname = getConfig('localhost');
-my $queuedir = getConfig('queuedir');
-my $delivery = getConfig('delivery');
+my $queuedir = getConfig('queuedir') || '/var/spool/qwik-smtpd';
+my $delivery = getConfig('delivery') || 2;
 my $maildir = getConfig('homemaildir') || 'Maildir'; # maildir under user's dir
 my $varspool = getConfig('spooldir') || '/var/spool/mail';
 my $homedirs = '/home';
@@ -80,13 +89,17 @@ while(1) {
       }
 
     unless($pid = fork) { # start of fork()
-      open(STDERR, ">>/tmp/qsmtpd.log");
-      if(!$<) {
-        my($x,$uid,$gid);
-        ($x,$x,$x,$x,$uid,$gid) = stat("$homedirs/$localuser");
-        (!$uid || !$gid) && die "file is root-owned";
-        $> = $uid || die "can't set effuid";
-        $) = $gid || die "can't set effgid";
+      open(STDERR, ">>/opt/spool/qwik-deliver.log");
+      if($to =~ /(.*)\@$domain/i && !$<) {
+        if(-e "$homedirs/$localuser/") {
+          my($x,$uid,$gid);
+          ($x,$x,$x,$x,$uid,$gid) = stat("$homedirs/$localuser");
+          (!$uid || !$gid) && die "file is root-owned";
+          $> = $uid || die "can't set effuid";
+          $) = $gid || die "can't set effgid";
+        } else {
+          $delivery = 3;
+        }
       }
 
       if($delivery == 1) { # mbox
@@ -111,6 +124,9 @@ while(1) {
             $time = time();
             $e = stat("tmp/$time.$$.$hostname");
           }
+          $message =~ m/Message-ID: <(.*)>/;
+          my $msgid = $1;
+          Log("DELIVERY $msgid local $localuser $e");
           open(MSG,">tmp/$time.$$.$hostname");
           print MSG $message;
           close(MSG);
@@ -120,8 +136,24 @@ while(1) {
         # ???
       }
 
-      if(!$localuser) {
-        if(open(INJECT,"| /usr/sbin/sendmail \"$to\"")) {
+      if(!$localuser || $localuser =~ /(.*)\@$domain/i) {
+        my $from;
+        # qwik-smtpd hack via SquirrelMail
+        $message =~ m/X-LocalUser: (.*)/;
+        $from = $1;
+        $message =~ m/Message-ID: <(.+?)>/;
+        my $msgid = $1;
+        $from =~ s/(\/|\\|\.\.|\'|\")//g;
+open(Z,">>/tmp/sm.log");
+print Z "\nFROM = $from\nMSG-ID: $msgid\nTo = $to\n";
+close(Z);
+        if($from =~ /\@$domain/i) {
+          $from = "MAILER-DAEMON@" . $domain;
+        } else {
+          $from .= "@$domain";
+        }
+        if(open(INJECT,"| /usr/sbin/sendmail -f\"$from\" \"$to\"")) {
+          Log("DELIVERY $msgid sendmail $to $from");
           print INJECT $message;
           close(INJECT);
         }
@@ -141,16 +173,23 @@ while(1) {
   # if we got a SIGnal, then disconnect from db and die, else wait 1 minute
   # and then re-run the queue
   if($killed) {
+    unlink($pidfile);
     exit(0);
   } else {
-    sleep(60);
+    sleep(30);
   }
 }
 
 sub getConfig {
   my($name) = @_;
-  open(CONFIG,"</etc/qwik-smtpd/$name");
-  chomp(my $value = <CONFIG>);
-  close(CONFIG);
+  my $value;
+  if(open(CONFIG,"</etc/qwik-smtpd/$name")) {
+    chomp($value = <CONFIG>);
+    close(CONFIG);
+  }
   return $value;
+}
+
+sub Log {
+  print STDERR "$_[0]\n";
 }

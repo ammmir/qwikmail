@@ -20,6 +20,9 @@
 // where the qwik-smtpd configuration files reside
 #define CONFIG_DIR "/etc/qwik-smtpd"
 
+// checkpassword program path
+#define CHECKPASSWORD "/var/spool/qwik-smtpd/checkpassword"
+
 /* change the -0800 and PST according to your timezone; the time format
    below is _supposed_ to be RFC 1123 compliant, but it really isn't! */
 #define RFC1123FMT "%d %b %Y %H:%M:%S -0800 (PST)"
