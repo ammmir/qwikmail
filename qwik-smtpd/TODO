@@ -1,8 +1,8 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2002-06-28 05:29:19 $
-$Revision: 1.9 $
+$Date: 2003-07-20 08:17:43 $
+$Revision: 1.10 $
 
 - FIX the stupid Makefile
 - fix problem with rcpthosts file; a newline is required at the end for parsing
@@ -23,3 +23,4 @@ $Revision: 1.9 $
   an SMTP transaction
 - MD5 hashing/logging of messages
 - add a relay count hopper... so that we don't infinitely loop messages!!!
+- add support for IPv6
