@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
    Version: 0.1
-   $Date: 2002-03-13 04:46:16 $ 
-   $Revision: 1.6 $
+   $Date: 2002-03-13 05:20:59 $ 
+   $Revision: 1.7 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   // load config limits
   int max_recipients = atoi(getConfig("maxrcpts"));
   int max_smtp_errors = atoi(getConfig("maxsmtperrors"));
-  int max_message_size = atoi(getConfig("databytes"));
+  long double max_message_size = atoi(getConfig("databytes"));
 
   // load config timeouts
   int connect_timeout = atoi(getConfig("connect_timeout"));

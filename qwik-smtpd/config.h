@@ -1,7 +1,7 @@
 /* Do the following:
     - change QUEUE_DIR to point to your queue dir (eg. /var/spool/qwik-smtpd)
     - change MAX_RECIPIENTS if you want to
-    - change RFC1123FMT to point to your timezone; eg. PDT to EST
+    - change RFC1123FMT to point to your timezone; eg. PST to EST
 
    And that's it!
 
@@ -20,9 +20,9 @@
 // where the qwik-smtpd configuration files reside
 #define CONFIG_DIR "/etc/qwik-smtpd"
 
-/* change the -0800 and PDT according to your timezone; the time format
+/* change the -0800 and PST according to your timezone; the time format
    below is _supposed_ to be RFC 1123 compliant, but it really isn't! */
-#define RFC1123FMT "%d %b %Y %H:%M:%S -0800 (PDT)"
+#define RFC1123FMT "%d %b %Y %H:%M:%S -0800 (PST)"
 
 
 /* ###################### DEFAULT VALUES ############################### */
