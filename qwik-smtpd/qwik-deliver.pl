@@ -3,8 +3,18 @@
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
 # (C) Copyright 2000-2002 by Amir Malik
-# $Date: 2002-04-28 22:00:21 $
-# $Revision: 1.6 $
+# $Date: 2002-04-28 22:15:18 $
+# $Revision: 1.7 $
+
+# Assumptions: (please grep this file for MODIFY THIS and change)
+# installing in /home/qwik-smtpd
+# spool is in /var/spool/qwik-smtpd
+# Maildir structure by default ie... /home/USERNAME/Maildir/SUBDIR
+# pid file for this daemon in /home/qwik-smtpd/qwik-deliver.pid
+# THIS DAEMON RUNS AS root! YOU HAVE BEEN WARNED.
+# THE CODE SHOULD BE SECURE, BUT BE SURE TO LOOK OVER WHAT THIS DAEMON
+# EXECUTES, HOW, AND WHAT ARGUMENTS IT PASSES TO THE SHELL!!!
+# works fine for me :-) -- heck, sendmail's smtpd runs as root... hmm..
 
 use strict;
 use DBI;
@@ -16,7 +26,7 @@ use vars qw($dbh $killed $exp $pid);
 umask(077);
 
 # write pid
-my $pidfile = "/home/qwik-smtpd/qwik-deliver.pid";
+my $pidfile = "/home/qwik-smtpd/qwik-deliver.pid"; # MODIFY THIS
 open(PID,">$pidfile");
 print PID "$$\n";
 close(PID);
@@ -89,7 +99,7 @@ while(1) {
       }
 
     unless($pid = fork) { # start of fork()
-      open(STDERR, ">>/opt/spool/qwik-deliver.log"); # MODIFY THIS
+      open(STDERR, ">>/var/spool/qwik-deliver.log"); # MODIFY THIS
       if($to =~ /(.*)\@$domain/i && !$<) {
         if(-e "$homedirs/$localuser/") {
           my($x,$uid,$gid);

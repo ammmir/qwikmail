@@ -1,7 +1,59 @@
 To install:
 
-Latest documentation:
+Latest documentation: ((NOT TRUE ANYMORE))
 http://qwikmail.sourceforge.net/smtpd/
+
+quickie install
+---------------
+
+- edit config.h and set the DEFAULTS!!
+- run make
+- if ok, run make install
+- look over the files in /etc/qwik-smtpd
+- append the content of the included inetd.conf or xinetd.conf to your
+  appropriate file in /etc
+- change permissions to /var/spool/qwik-smtpd to match your qwik-smtpd
+  user that you specified in your inetd.conf or xinetd.conf
+- killall -HUP inetd or killall -HUP xinetd
+- cd /home/qwik-smtpd
+- grep "MODIFY THIS" qwik-deliver.pl
+- make the necessary changes to qwik-deliver.pl and finally,
+- /home/qwik-smtpd/qwik-deliver.pl
+
+- now everything should be running smoothly, assuming that your config
+  is set up right... either /var/spool/mail or /home/USER/Maildir setups
+  are working correctly
+- test it out like so:
+
+telnet YOUR_EXTERNAL_IP_NOT_LOCALHOST 25
+
+Trying 1.1.1.1...
+Connected to 1.1.1.1.
+Escape character is '^]'.
+220 yourdom SMTP service ready
+HELO x
+250 ok
+MAIL FROM:<>
+250 null sender <> ok
+RCPT TO:<skdjfksjdf@skdjfksjfd.com>
+550 relaying denied
+RCPT TO:<sfjhgkjhfdg@yourdom>
+550 user not here
+RCPT TO:<valid_login_account@yourdom>
+250 ok
+DATA
+354 type away!
+ok this is just a test messsage...
+.
+250 message accepted for delivery
+quit
+221 see 'ya later!
+Connection closed by foreign host.
+
+- and it should end up in your mailbox within 30 seconds!
+- enjoy ;-) -- amir142@users.sourceforge.net
+
+--end quickie--
 
 1. note this: this server has not been tested in a production environment
 2. edit "config.h" and look over the defaults and change some of them if
