@@ -3,8 +3,8 @@
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
 # (C) Copyright 2000-2001 by Amir Malik
-# $Date: 2002-01-04 17:40:23 $
-# $Revision: 1.2 $
+# $Date: 2002-02-07 02:41:16 $
+# $Revision: 1.3 $
 
 use strict;
 use DBI;
@@ -20,21 +20,20 @@ $SIG{QUIT} = sub { $killed = 1; };
 $SIG{STOP} = sub { $killed = 1; };
 $SIG{CHLD} = sub { wait };
 
-# CONFIGURATION OPTIONS
+# MODIFY THS BELOW
 
-my $domain = 'virusexperts.com';
-
-my $hostname = 'hosting';
-
-my $queuedir = '/var/spool/qwik-smtpd'; # MODIFY THIS
-
-my $delivery = 2; # 0 = none (???), 1 = mbox, 2 = maildir
-
-my $maildir = 'Maildir'; # name of maildir under user's homedir
-
-my $varspool = '/var/spool/mail';
-
+my $domain = getConfig('localhost');
+my $hostname = getConfig('localhost');
+my $queuedir = getConfig('queuedir');
+my $delivery = getConfig('delivery');
+my $maildir = getConfig('homemaildir') || 'Maildir'; # maildir under user's dir
+my $varspool = getConfig('spooldir') || '/var/spool/mail';
 my $homedirs = '/home';
+
+if(!$domain || !$hostname || !$queuedir) {
+  print "Error: configuration is incomplete\n";
+  exit(0);
+}
 
 #######################
 
@@ -146,4 +145,12 @@ while(1) {
   } else {
     sleep(60);
   }
+}
+
+sub getConfig {
+  my($name) = @_;
+  open(CONFIG,"</etc/qwik-smtpd/$name");
+  chomp(my $value = <CONFIG>);
+  close(CONFIG);
+  return $value;
 }
