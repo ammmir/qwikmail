@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2003-11-13 06:50:42 $ 
-   $Revision: 1.19 $
+   $Date: 2003-11-13 20:45:37 $ 
+   $Revision: 1.20 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -95,6 +95,14 @@ int main(int argc, char* argv[])
   int i = 0;
 
   int found = 0;
+
+  // check if running as root
+  if(geteuid() == 0)
+  {
+    printf("421 qwik-smtpd refuses to run as root!\r\n");
+    (void) fflush(stdout);
+    exit(1);
+  }
 
   // load config limits
   int max_recipients = atoi(getConfig("maxrcpts"));
