@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.2
-   $Date: 2002-03-13 18:42:34 $ 
-   $Revision: 1.10 $
+   $Date: 2002-03-19 00:12:12 $ 
+   $Revision: 1.11 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -175,7 +175,6 @@ int main(int argc, char* argv[])
         fclose(fpout);
         if(max_message_size > 0 && messageSize > max_message_size)
         {
-          // TODO: delete file, since it's too big
           out(552, "too much mail data");
           unlink(messageFile);
           messageSize = 0;
@@ -245,8 +244,15 @@ int main(int argc, char* argv[])
       {
         clientState = GREETING;
         strcpy(clientHelo,arg2);
-        printf("250-%s\r\n250-SIZE %d\r\n250 HELP\r\n", localHost,
-               max_message_size);
+        if(max_message_size > 0)
+        {
+          printf("250-%s\r\n250-SIZE %d\r\n250 HELP\r\n", localHost,
+                 max_message_size);
+        }
+        else
+        {
+          printf("250-%s\r\n250 HELP\r\n", localHost);
+        }
         (void) fflush(stdout);
       }
       else if(!strcasecmp(arg1,"HELO"))
@@ -280,7 +286,7 @@ int main(int argc, char* argv[])
       else if(!strcasecmp(arg1,"RCPT") && (!strcasecmp(arg2,"TO") ||
            !strcasecmp(arg2,"TO:")))
       {
-        if(clientState == GREETING)
+        if(clientState <= GREETING)
         {
 	  out(503,"need MAIL first");
         }
@@ -292,6 +298,8 @@ int main(int argc, char* argv[])
           }
           else
           {
+            // stop some spammers by introducing a delay
+            if(clientRcpts > MAX_FAST_RCPTS || clientRcpts > max_recipients/2) sleep(1);
             // only accept mail to localHost; ignore if no @ sign
             for(x = 0; x < cfgRcptHosts; x++)
             {
@@ -318,15 +326,12 @@ int main(int argc, char* argv[])
                 // which means that the domain = localHost
                 clientState = RCPTTO;
                 push(arg3);
-                // TODO: introduce a short delay to prevent spamming
                 out(250, "ok");
                 alarm(rcpt_timeout);
               }
             }
             else
             {
-              // at the moment only localHost can relay/receive mail
-              // TODO: add "real" relay support; rcpthosts-style
               if(!strcasecmp(clientIP,"127.0.0.1") ||
                  !strcasecmp(clientIP,localIP)) {
                 // allow only local relaying of mail
