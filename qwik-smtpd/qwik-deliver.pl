@@ -1,9 +1,10 @@
 #!/usr/bin/perl -w
-
 # qwik-deliver.pl - delivery agent for QwikMail smtpd
 # Part of the Qwik SQL Webmail Server project, part of qwik-smtpd:
 # http://qwikmail.sourceforge.net/smtpd/
 # (C) Copyright 2000-2001 by Amir Malik
+# $Date: 2002-01-04 17:40:23 $
+# $Revision: 1.2 $
 
 use strict;
 use DBI;

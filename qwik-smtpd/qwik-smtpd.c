@@ -4,7 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
    Version: 0.1
-   $Date: 2002-01-04 05:53:47 $ 
+   $Date: 2002-01-04 17:40:23 $ 
+   $Revision: 1.3 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
