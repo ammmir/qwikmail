@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2003-07-20 08:27:10 $ 
-   $Revision: 1.18 $
+   $Date: 2003-11-13 06:50:42 $ 
+   $Revision: 1.19 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -162,8 +162,15 @@ int main(int argc, char* argv[])
   strcpy(clientHost,getIP());
 
   // send SMTP greeting
+  if(!strcmp(localHost,""))
+  {
+    printf("421 qwik-smtpd configuration error: no hostname defined!\r\n");
+    (void) fflush(stdout);
+    exit(1);
+  }
   strcpy(greeting, getConfig("smtpgreeting"));
   if(!strcmp(greeting,"")) sprintf(greeting, "%s SMTP service", localHost);
+
   printf("220 %s ready\r\n", greeting);
   (void) fflush(stdout);
 
