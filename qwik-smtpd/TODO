@@ -1,16 +1,16 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2004-10-21 04:34:05 $
-$Revision: 1.16 $
+$Date: 2004-11-18 05:51:25 $
+$Revision: 1.17 $
 
 - introduce functions for all SMTP verbs
 - reduce global variable pollution
-- run checkpassword *after* RCPT TO's, but before DATA command, to minimize
-  DoS attacks against checkpassword program; or fork a kid and talk to it
-  via SysV IPC... if not that, throttle RCPT commands (sleep?), and as a
-  last resort, make the checkpassword binary leaner (ie. rewrite in C)
-- check MX record for domain given in HELO/EHLO
+- run chkusr during RCPT TO command; it will tell us: a) accept/deny this
+  envelope request, b) possible forwarding address, c) tempfail it for
+  a greylisting-type setup
+- introduce a tarpit delay to RCPT TO commands
+- check MX record for domain given in HELO/EHLO (async dns lookup)
 - add something like /etc/aliases or equivalent
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
   are allowed to relay mail through us

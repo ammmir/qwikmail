@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.4
-   $Date: 2004-10-31 02:31:47 $ 
-   $Revision: 1.26 $
+   $Date: 2004-11-18 05:51:25 $ 
+   $Revision: 1.27 $
    Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
   char controlFile[64];
   char messageFile[64];
   char messageID[128];
-  char Received[128];
+  char Received[1128];
   FILE *fpout;
 
   FILE *chk;
@@ -440,6 +440,7 @@ int main(int argc, char* argv[])
                   myPid, localHost);
           t1 = time( (time_t *) 0 );
           (int*) s = time(&t1);
+	  // TODO: use snprintf here (FIXME)
           sprintf(Received,"Received: from %s (HELO %s) (%s) by %s with SMTP; %s\n",
                   clientHost, clientHelo, clientIP, localHost, timebuf);
           if((fpout = fopen(messageFile,"w")) == NULL)
