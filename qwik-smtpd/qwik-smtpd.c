@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of a ESMTP server
    Version: 0.1
-   $Date: 2002-03-12 18:15:16 $ 
-   $Revision: 1.5 $
+   $Date: 2002-03-13 04:46:16 $ 
+   $Revision: 1.6 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -54,11 +54,15 @@ char clientMailFrom[64];
 char *clientRcptTo[100];
 int clientRcpts = 0;
 int messageSize = 0;
+int cfgRcptHosts = 0;
+char *rcpthosts[100];
+
 
 // functions
 extern int parseInput(char [],char [],char [], char []);
 extern int getline(char [], int);
 extern int getConfig(char []);
+extern int getConfigMulti(char []);
 extern int out(int, char[]);
 extern int push(char[]);
 extern int catch_alarm(int);
@@ -86,6 +90,8 @@ int main(int argc, char* argv[])
   // real paranoid about the size of chars :-O
   char *arg;
   int i = 0;
+
+  int found = 0;
 
   // load config limits
   int max_recipients = atoi(getConfig("maxrcpts"));
@@ -138,6 +144,10 @@ int main(int argc, char* argv[])
   strcpy(localIP,getConfig("localip"));
   strcpy(localHost,getConfig("localhost"));
   strcpy(clientIP,getIP());
+
+  //get rcpthosts
+  getConfigMulti("rcpthosts");
+
   // TODO: convert the IP address into a hostname
   strcpy(clientHost,getIP());
 
@@ -282,9 +292,18 @@ int main(int argc, char* argv[])
           else
           {
             // only accept mail to localHost; ignore if no @ sign
-            if(strstr(arg3,localHost) || !strstr(arg3,"@"))
+            for(x = 0; x < cfgRcptHosts; x++)
             {
-              if(!strstr(arg3,"!"))
+              if(rcpthosts[x] != NULL && !strcasecmp(rcpthosts[x],arg3))
+              {
+                found = 1;
+                break;
+              }
+            }
+
+            if(found == 1 || !strstr(arg3,"@"))
+            {
+              if(strstr(arg3,"!"))
               {
                 out(550, "relaying denied");
               }
@@ -497,6 +516,45 @@ int getConfig(char option[])
     line[i] = '\0';
     fclose(config);
     return line;
+  }
+}
+
+int getConfigMulti(char option[])
+{
+  int c;
+  int i = 0;
+  char line[128];
+  char file[128];
+  FILE *config;
+
+  sprintf(file, "%s/%s", CONFIG_DIR, option);
+
+  if((config = fopen(file,"r")) == NULL)
+  {
+    //out(500, "Configuration error");
+    return "";
+  }
+  else
+  {
+    while((c = getc(config)) != EOF)
+    {
+      if(c == '\n')
+      {
+        cfgRcptHosts++;
+        line[i] = '\0';
+        rcpthosts[cfgRcptHosts] = (char*) malloc(64);
+        strcpy(rcpthosts[cfgRcptHosts],line);
+        i = -1;
+        strcpy(line,"");
+      }
+      else
+      {
+        line[i] = c;
+      }
+      i++;
+    }
+    fclose(config);
+    return "";
   }
 }
 
