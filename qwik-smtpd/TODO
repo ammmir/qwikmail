@@ -1,9 +1,10 @@
 qwik-smtpd TODO
 ---------------
 
-$Date: 2002-06-01 23:49:34 $
-$Revision: 1.7 $
+$Date: 2002-06-01 23:51:22 $
+$Revision: 1.8 $
 
+- FIX the stupid Makefile
 - fix problem with rcpthosts file; a newline is required at the end for parsing
 - add something like /etc/aliases or equivalent
 - add relaying, maybe a relayhosts file, that has IP addresses of hosts that
