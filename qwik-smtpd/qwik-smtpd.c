@@ -4,8 +4,8 @@
                 Implementation -- implementing all the required functionality
                 of an SMTP server
    Version: 0.3
-   $Date: 2002-05-23 02:25:41 $ 
-   $Revision: 1.15 $
+   $Date: 2002-06-15 23:35:21 $ 
+   $Revision: 1.16 $
    Author: Amir Malik
    Website: http://qwikmail.sourceforge.net/smtpd/
 
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
   // load config limits
   int max_recipients = atoi(getConfig("maxrcpts"));
   int max_smtp_errors = atoi(getConfig("maxsmtperrors"));
-  long double max_message_size = atoi(getConfig("databytes"));
+  long double max_message_size = atof(getConfig("databytes"));
 
   // load config timeouts
   int connect_timeout = atoi(getConfig("connect_timeout"));
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 
   if(!max_recipients) max_recipients = MAX_RECIPIENTS;
   if(!max_smtp_errors) max_smtp_errors = MAX_SMTP_ERRORS;
-  if(!max_message_size) max_message_size = MAX_MESSAGE_SIZE;
+  if(!max_message_size || max_message_size == 0) max_message_size = MAX_MESSAGE_SIZE;
 
   if(!connect_timeout) connect_timeout = CONNECT_TIMEOUT;
   if(!mail_timeout) mail_timeout = MAIL_TIMEOUT;
