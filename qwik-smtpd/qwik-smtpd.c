@@ -3,13 +3,13 @@
                 this server complies with RFC-821 section 4.5.1 Minimum
                 Implementation -- implementing all the required functionality
                 of an SMTP server
-   Version: 0.3
-   $Date: 2002-06-15 23:43:45 $ 
-   $Revision: 1.17 $
-   Author: Amir Malik
+   Version: 0.4
+   $Date: 2003-07-20 08:27:10 $ 
+   $Revision: 1.18 $
+   Author: Amir Malik <amir142@users.sourceforge.net>
    Website: http://qwikmail.sourceforge.net/smtpd/
 
-   (C) Copyright 2000-2002 by Amir Malik
+   (C) Copyright 2000-2003 by Amir Malik
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -107,6 +107,7 @@ int main(int argc, char* argv[])
   int rcpt_timeout = atoi(getConfig("rcpt_timeout"));
   int data_timeout = atoi(getConfig("data_timeout"));
 
+  // if you're paranoid, increase these array sizes
   char greeting[256];
   char inputLine[1024];
   char arg1[1024];
@@ -226,6 +227,7 @@ int main(int argc, char* argv[])
             {
               if(x != NULL) out(500, "too many recipients");
             }
+	  // TODO: optional: run script to check for viruses
           out(250, "message accepted for delivery");
           }
         }
@@ -389,6 +391,7 @@ int main(int argc, char* argv[])
               if(!strcasecmp(clientIP,"127.0.0.1") ||
                  !strcasecmp(clientIP,localIP)) {
                 // only allow loopback or a particular IP to relay mail
+		// TODO: remove hard-coded localhost value
                 clientState = RCPTTO;
                 push(arg3);
                 out(250, "ok");
