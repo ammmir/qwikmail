@@ -1,5 +1,8 @@
 To install:
 
+Latest documentation:
+http://qwikmail.sourceforge.net/qwik-smtpd/
+
 1. note this: this server has not been tested in a production environment
 2. edit "config.h" and look over the defaults and change some of them if
    you want to; configuration files will override any of the compiled-in
