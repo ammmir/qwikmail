@@ -6,23 +6,23 @@
     |_|                                      |_|          
 
 
-Q: What is it?
-A: It is an SMTP (mail) server that supports SMTP and ESMTP. Once finished,
-   it will be very secure, hopefully with the same reputation as qmail.
+qwik-smtpd is a small mail server that supports ESMTP, and aims at being
+a replacement for sendmail, postfix, and Qmail. Its strengths include
+simplicity, speed, security, and size. It is part of the QwikMail
+mail system package. It is written in C that is hoped to be portable,
+so it should compile on any ANSI C compiler, but requires a POSIX-compliant
+system for all the bells and whistles.
 
-It supports the following standards:
-- minimal SMTP compliance; full SMTP compliance coming, and rudimentary ESMTP
-  compliance still in the works
-- supports delivery to either mbox files or Maildirs
+qwik-smtpd takes no part in the delivery of the actual mail, it merely
+accepts mail and places it into a queue. The mail delivery agent (MDA),
+qwik-deliver, delivers items in the queue to their respective locations,
+such as mbox files, Maildirs, or remote mail servers.
 
-QwikMail SMTP server
- part of the Qwik SQL Webmail Server project
-see http://qwikmail.sourceforge.net/smtpd/ for more info on qwik-smtpd.
+qwik-smtpd is a part of the QwikMail project, which is located at
+http://qwikmail.sourceforge.net/
 
-see the file INSTALL on how to install this thingy.
-see the file COPYING for the GNU General Public License.
+Should you have any questions, comments, or criticisms, please don't hesitate
+to contact me at amir142 at sourceforge dot net. Thanks for using QwikMail!
 
-Questions, comments, criticisms, bugs? Email to: amir142@users.sourceforge.net
-
-Thanks for using qwik-smtpd!
 Amir Malik
+QwikMail Developer
